@@ -1,11 +1,10 @@
 """
-Atomic Search - Main Entry Point
+SuperNova Search - Main Entry Point
 
 Run with: python -m atomic_search.main
          or: gunicorn 'atomic_search.main:app' ...
 """
 
-import asyncio
 import os
 import sys
 
@@ -20,7 +19,7 @@ app = create_app()
 
 
 def main():
-    """Run the Atomic Search application."""
+    """Run the SuperNova Search application."""
     # Get host and port from config
     host = config.HOST
     port = config.PORT
@@ -29,12 +28,14 @@ def main():
     print("""
 ╔══════════════════════════════════════════════════════════════╗
 ║                                                              ║
-║     Atomic Search - Privacy-First Search Engine               ║
+║     ⭐ SuperNova Search - Privacy-First Search Engine        ║
 ║                                                              ║
 ║     Version: 1.0.0                                           ║
 ║     Mode: Production                                         ║
 ║                                                              ║
 ║     Running at: http://{0}:{1}                              ║
+║                                                              ║
+║     🔒 Zero Telemetry | 🔐 Privacy First                     ║
 ║                                                              ║
 ║     Press Ctrl+C to stop                                     ║
 ║                                                              ║
