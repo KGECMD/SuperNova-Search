@@ -292,10 +292,16 @@
             background-clip: text;
         }
 
-        /* Emoji fallback */
-        .emoji {
-            font-family: 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji', sans-serif;
-            font-size: 1.2em;
+        /* SVG Icon styles */
+        .icon {
+            width: 1.2em;
+            height: 1.2em;
+            vertical-align: middle;
+            fill: currentColor;
+        }
+        .icon-lg {
+            width: 2.5em;
+            height: 2.5em;
         }
 
         /* Theme Selector */
@@ -401,7 +407,9 @@
     <header class="header">
         <div class="header-content">
             <a href="/" class="logo">
-                <span class="logo-icon">🔬</span>
+                <svg class="icon logo-icon" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                </svg>
                 <span>{{ config.APP_NAME }}</span>
             </a>
             
