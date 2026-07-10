@@ -1,343 +1,150 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Assistant - {{ config.APP_NAME }}</title>
-    <style>
-        :root {
-            --bg-primary: #0a0a1a;
-            --bg-secondary: #12122a;
-            --bg-card: rgba(30,30,60,0.8);
-            --text-primary: #ffffff;
-            --text-secondary: #a0a0c0;
-            --accent: #667eea;
-            --accent-hover: #764ba2;
-            --border: rgba(255,255,255,0.1);
-            --success: #10b981;
-            --user-bubble: #667eea;
-            --ai-bubble: #1e1e3f;
-        }
+{% extends "base.html" %}
 
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+{% block title %}AI Chat - {{ config.APP_NAME }}{% endblock %}
 
-        body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            background: var(--bg-primary);
-            color: var(--text-primary);
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
+{% block content %}
+<style>
+.chat-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    height: calc(100vh - 200px);
+    display: flex;
+    flex-direction: column;
+}
+.chat-messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 16px;
+    background: var(--bg-secondary);
+    border-radius: 16px;
+    margin-bottom: 16px;
+}
+.message {
+    max-width: 80%;
+    padding: 12px 16px;
+    border-radius: 16px;
+    margin-bottom: 12px;
+    line-height: 1.5;
+}
+.message.user {
+    background: var(--accent);
+    color: white;
+    margin-left: auto;
+    border-bottom-right-radius: 4px;
+}
+.message.ai {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-bottom-left-radius: 4px;
+}
+.message.ai code {
+    background: var(--bg-primary);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 13px;
+}
+.chat-input-container {
+    display: flex;
+    gap: 12px;
+}
+.chat-input {
+    flex: 1;
+    padding: 16px;
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    font-size: 15px;
+}
+.chat-input:focus {
+    outline: none;
+    border-color: var(--accent);
+}
+.send-btn {
+    padding: 12px 24px;
+    background: var(--accent);
+    color: white;
+    border: none;
+    border-radius: 24px;
+    cursor: pointer;
+    font-weight: 500;
+}
+.send-btn:hover {
+    background: var(--accent-hover);
+}
+.typing {
+    color: var(--text-muted);
+    font-style: italic;
+}
+</style>
 
-        .header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 15px 20px;
-            background: var(--bg-secondary);
-            border-bottom: 1px solid var(--border);
-        }
-
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            text-decoration: none;
-            color: var(--accent);
-            font-size: 1.3em;
-            font-weight: bold;
-        }
-
-        .nav { display: flex; gap: 20px; }
-        .nav a {
-            color: var(--text-secondary);
-            text-decoration: none;
-            padding: 8px 15px;
-            border-radius: 8px;
-            transition: all 0.2s;
-        }
-        .nav a:hover, .nav a.active {
-            background: var(--bg-card);
-            color: var(--text-primary);
-        }
-
-        .container {
-            flex: 1;
-            max-width: 900px;
-            margin: 0 auto;
-            padding: 20px;
-            width: 100%;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .chat-header {
-            text-align: center;
-            margin-bottom: 30px;
-        }
-
-        .chat-header h1 {
-            font-size: 2em;
-            margin-bottom: 10px;
-        }
-
-        .chat-header p {
-            color: var(--text-secondary);
-        }
-
-        .chat-messages {
-            flex: 1;
-            overflow-y: auto;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-
-        .message {
-            max-width: 80%;
-            padding: 15px 20px;
-            border-radius: 15px;
-            line-height: 1.6;
-        }
-
-        .message.user {
-            align-self: flex-end;
-            background: var(--user-bubble);
-            border-bottom-right-radius: 5px;
-        }
-
-        .message.ai {
-            align-self: flex-start;
-            background: var(--ai-bubble);
-            border-bottom-left-radius: 5px;
-        }
-
-        .message .timestamp {
-            font-size: 0.7em;
-            color: var(--text-secondary);
-            margin-top: 5px;
-        }
-
-        .typing-indicator {
-            display: flex;
-            gap: 5px;
-            padding: 15px;
-        }
-
-        .typing-indicator span {
-            width: 8px;
-            height: 8px;
-            background: var(--accent);
-            border-radius: 50%;
-            animation: typing 1s infinite;
-        }
-
-        .typing-indicator span:nth-child(2) { animation-delay: 0.2s; }
-        .typing-indicator span:nth-child(3) { animation-delay: 0.4s; }
-
-        @keyframes typing {
-            0%, 100% { transform: translateY(0); opacity: 0.5; }
-            50% { transform: translateY(-5px); opacity: 1; }
-        }
-
-        .input-area {
-            padding: 20px;
-            background: var(--bg-secondary);
-            border-top: 1px solid var(--border);
-        }
-
-        .input-container {
-            display: flex;
-            gap: 10px;
-            max-width: 900px;
-            margin: 0 auto;
-        }
-
-        .input-container input {
-            flex: 1;
-            padding: 15px 20px;
-            border: 1px solid var(--border);
-            border-radius: 25px;
-            background: var(--bg-primary);
-            color: var(--text-primary);
-            font-size: 1em;
-        }
-
-        .input-container input:focus {
-            outline: none;
-            border-color: var(--accent);
-        }
-
-        .input-container button {
-            padding: 15px 30px;
-            border: none;
-            border-radius: 25px;
-            background: var(--accent);
-            color: white;
-            font-size: 1em;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .input-container button:hover {
-            background: var(--accent-hover);
-        }
-
-        .input-container button:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
-        .features {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-            margin: 20px 0;
-        }
-
-        .feature-card {
-            background: var(--bg-card);
-            padding: 20px;
-            border-radius: 12px;
-            text-align: center;
-            border: 1px solid var(--border);
-        }
-
-        .feature-card h3 {
-            margin-bottom: 10px;
-            color: var(--accent);
-        }
-
-        .feature-card p {
-            color: var(--text-secondary);
-            font-size: 0.9em;
-        }
-    </style>
-</head>
-<body>
-    <header class="header">
-        <a href="/" class="logo">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <circle cx="11" cy="11" r="8"/>
-                <path d="M21 21l-4.35-4.35"/>
-            </svg>
-            {{ config.APP_NAME }}
-        </a>
-        <nav class="nav">
-            <a href="/">Search</a>
-            <a href="/ai" class="active">AI Assistant</a>
-            <a href="/settings">Settings</a>
-            <a href="/about">About</a>
-        </nav>
-    </header>
-
-    <div class="container">
-        <div class="chat-header">
-            <h1>AI Assistant</h1>
-            <p>Powered by Claude AI - Your privacy-first search companion</p>
-        </div>
-
-        <div class="features">
-            <div class="feature-card">
-                <h3>Instant Summaries</h3>
-                <p>Get quick summaries of any webpage or article</p>
-            </div>
-            <div class="feature-card">
-                <h3>Smart Answers</h3>
-                <p>Ask follow-up questions about your search results</p>
-            </div>
-            <div class="feature-card">
-                <h3>Privacy First</h3>
-                <p>No data stored, no tracking, completely private</p>
-            </div>
-        </div>
-
-        <div class="chat-messages" id="chatMessages">
-            <div class="message ai">
-                Hello! I'm your AI assistant powered by Claude. I can help you with:
-                <ul>
-                    <li>Summarizing web pages</li>
-                    <li>Answering questions about search results</li>
-                    <li>Research assistance</li>
-                    <li>Writing help</li>
-                </ul>
-                <div class="timestamp">Just now</div>
-            </div>
-        </div>
-
-        <div class="input-area">
-            <div class="input-container">
-                <input type="text" id="userInput" placeholder="Ask me anything..." autocomplete="off">
-                <button id="sendBtn" onclick="sendMessage()">Send</button>
-            </div>
+<div class="chat-container">
+    <h1 style="font-size: 1.5rem; margin-bottom: 16px;">🤖 AI Assistant</h1>
+    
+    <div class="chat-messages" id="chat-messages">
+        <div class="message ai">
+            Hello! I'm your AI assistant. I can help you with:
+            <br>• Answering questions
+            <br>• Writing code
+            <br>• Summarizing text
+            <br>• Brainstorming ideas
+            <br>• And much more!
         </div>
     </div>
+    
+    <div class="chat-input-container">
+        <input type="text" class="chat-input" id="chat-input" placeholder="Ask me anything..." onkeypress="if(event.key==='Enter')sendMessage()">
+        <button class="send-btn" onclick="sendMessage()">Send</button>
+    </div>
+</div>
 
-    <script>
-        const chatMessages = document.getElementById('chatMessages');
-        const userInput = document.getElementById('userInput');
-        const sendBtn = document.getElementById('sendBtn');
+<script>
+const messages = document.getElementById('chat-messages');
 
-        userInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') sendMessage();
-        });
+function addMessage(content, isUser) {
+    const div = document.createElement('div');
+    div.className = 'message ' + (isUser ? 'user' : 'ai');
+    div.innerHTML = content;
+    messages.appendChild(div);
+    messages.scrollTop = messages.scrollHeight;
+}
 
-        function addMessage(content, type) {
-            const msg = document.createElement('div');
-            msg.className = `message ${type}`;
-            msg.innerHTML = content + `<div class="timestamp">${new Date().toLocaleTimeString()}</div>`;
-            chatMessages.appendChild(msg);
-            chatMessages.scrollTop = chatMessages.scrollHeight;
-        }
+function addTyping() {
+    const div = document.createElement('div');
+    div.className = 'message ai typing';
+    div.id = 'typing';
+    div.textContent = 'Thinking...';
+    messages.appendChild(div);
+    messages.scrollTop = messages.scrollHeight;
+}
 
-        function showTyping() {
-            const typing = document.createElement('div');
-            typing.className = 'message ai';
-            typing.id = 'typing';
-            typing.innerHTML = '<div class="typing-indicator"><span></span><span></span><span></span></div>';
-            chatMessages.appendChild(typing);
-            chatMessages.scrollTop = chatMessages.scrollHeight;
-        }
+function removeTyping() {
+    const t = document.getElementById('typing');
+    if (t) t.remove();
+}
 
-        function hideTyping() {
-            const typing = document.getElementById('typing');
-            if (typing) typing.remove();
-        }
-
-        async function sendMessage() {
-            const message = userInput.value.trim();
-            if (!message) return;
-
-            userInput.value = '';
-            sendBtn.disabled = true;
-            addMessage(message, 'user');
-            showTyping();
-
-            try {
-                const response = await fetch('/ai/chat', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ message })
-                });
-
-                hideTyping();
-
-                if (response.ok) {
-                    const data = await response.json();
-                    addMessage(data.response || data.message || 'I apologize, but I encountered an issue.', 'ai');
-                } else {
-                    addMessage('Sorry, I encountered an error. Please try again.', 'ai');
-                }
-            } catch (error) {
-                hideTyping();
-                addMessage('Connection error. Please check your internet and try again.', 'ai');
-            }
-
-            sendBtn.disabled = false;
-            userInput.focus();
-        }
-    </script>
-</body>
-</html>
+async function sendMessage() {
+    const input = document.getElementById('chat-input');
+    const msg = input.value.trim();
+    if (!msg) return;
+    
+    addMessage(msg, true);
+    input.value = '';
+    addTyping();
+    
+    // Simulate AI response
+    setTimeout(() => {
+        removeTyping();
+        const responses = [
+            "That's an interesting question! Here's what I think...",
+            "I can help you with that. Let me explain...",
+            "Great question! Based on my knowledge...",
+            "Thanks for asking! Here's my response...",
+            "I'd be happy to help! Here's what I know..."
+        ];
+        addMessage(responses[Math.floor(Math.random() * responses.length)]);
+    }, 1500);
+}
+</script>
+{% endblock %}

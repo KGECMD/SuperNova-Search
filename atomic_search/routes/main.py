@@ -426,3 +426,23 @@ def crawl_page():
         "status": "Active"
     }
     return render_template("crawl.html", stats=stats)
+
+
+@bp.route("/ai")
+def ai_chat():
+    """AI Chat Assistant page."""
+    return render_template("ai.html")
+
+
+@bp.route("/compare", methods=["GET", "POST"])
+def compare():
+    """Search Engine Compare - Unique feature!"""
+    query = None
+    if request.method == "POST":
+        query = request.form.get("query", "")
+    return render_template("compare.html", query=query)
+
+@bp.route("/hack")
+def hack():
+    """Matrix/Hack mode easter egg."""
+    return render_template("hack.html")
