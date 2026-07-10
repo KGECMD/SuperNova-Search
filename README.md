@@ -9,6 +9,11 @@ A **privacy-first**, **open-source** search engine with AI capabilities. Built f
 
 **By the UCXP Project** - Your privacy is our priority.
 
+## 💬 Community Support
+
+Join our Matrix room for support, updates, and discussions:
+- **Matrix:** [#supernovabyucxpproject:matrix.org](https://matrix.to/#/#supernovabyucxpproject:matrix.org)
+
 ## ✨ Features
 
 ### 🔒 Privacy Features

@@ -6,8 +6,6 @@ __pycache__
 *.so
 *.egg
 *.egg-info
-dist
-build
 .git
 .gitignore
 .env
@@ -27,3 +25,5 @@ htmlcov/
 *.swo
 *~
 app.log
+start.bat
+run.ps1
