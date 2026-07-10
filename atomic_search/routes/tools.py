@@ -57,6 +57,7 @@ def index():
 @bp.route("/calculate", methods=["POST"])
 def calculate():
     """Evaluate a mathematical expression."""
+    import math
     data = request.get_json()
     expression = data.get("expression", "")
     
@@ -66,8 +67,14 @@ def calculate():
         allowed_chars = set('0123456789+-*/().e sqrtloginsincostanpow ')
         if all(c in allowed_chars for c in expression):
             # Replace common functions with their math equivalents
-            safe_expr = expression.replace('sqrt', '**0.5').replace('log', 'log10')
-            result = eval(safe_expr)
+            safe_expr = expression
+            safe_expr = safe_expr.replace('sqrt(', 'math.sqrt(')
+            safe_expr = safe_expr.replace('log(', 'math.log10(')
+            safe_expr = safe_expr.replace('sin(', 'math.sin(')
+            safe_expr = safe_expr.replace('cos(', 'math.cos(')
+            safe_expr = safe_expr.replace('tan(', 'math.tan(')
+            safe_expr = safe_expr.replace('pow(', 'math.pow(')
+            result = eval(safe_expr, {"__builtins__": {}, "math": math})
             return jsonify({"success": True, "result": float(result)})
         else:
             return jsonify({"success": False, "error": "Invalid characters"})
