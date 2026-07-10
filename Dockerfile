@@ -1,28 +1,19 @@
-# SuperNova Search Dockerfile
-FROM python:3.12-slim
-
-ENV PYTHONDONTWRITEBYTECODE=1
-ENV PYTHONUNBUFFERED=1
+FROM python:3.11-slim
 
 WORKDIR /app
 
 # Install dependencies
-RUN apt-get update && apt-get install -y --no-install-recommends curl && rm -rf /var/lib/apt/lists/*
-
-# Copy and install
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy app
-COPY main.py .
-COPY atomic_search/ ./atomic_search/
-COPY start.sh .
+COPY . .
 
-# Create dirs
-RUN mkdir -p /tmp/atomic_search && chmod 777 /tmp/atomic_search && chmod +x start.sh
+# Environment
+ENV PYTHONUNBUFFERED=1
+ENV DATABASE_PATH=/data/supernova_index.db
 
-# Expose port
-EXPOSE 8080
+# Volume for persistent data
+VOLUME /data
 
-# Run
-CMD ["./start.sh"]
+CMD ["gunicorn", "atomic_search.app:app", "--bind", "0.0.0.0:8080"]
