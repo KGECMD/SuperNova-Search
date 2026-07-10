@@ -65,7 +65,7 @@ mypy>=1.7.0
 
 # Production server
 gunicorn>=26.0.0
-gevent>=23.9.0
+gevent>=26.5.0
 
 # Security scanning
 safety>=3.0.0
