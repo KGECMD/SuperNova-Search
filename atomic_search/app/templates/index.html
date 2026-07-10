@@ -1,83 +1,96 @@
 {% extends "base.html" %}
 
-{% block title %}{{ config.APP_NAME }} - Search Privately{% endblock %}
+{% block title %}{{ config.APP_NAME }} - Privacy-First Search{% endblock %}
 
 {% block content %}
+<style>
+.stats-bar {
+    background: var(--bg-secondary);
+    border-bottom: 1px solid var(--border);
+    padding: 8px 16px;
+    font-size: 13px;
+    color: var(--text-secondary);
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    align-items: center;
+}
+.stats-bar .dot { color: var(--success); }
+.stats-bar .stat { margin-left: auto; }
+.hero {
+    text-align: center;
+    padding: 80px 20px;
+    max-width: 652px;
+    margin: 0 auto;
+}
+.hero h1 {
+    font-size: 3rem;
+    font-weight: 700;
+    margin-bottom: 8px;
+    background: linear-gradient(135deg, var(--accent), var(--accent-hover));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+.hero .subtitle {
+    font-size: 1.25rem;
+    color: var(--text-secondary);
+    margin-bottom: 32px;
+}
+.hero .badges {
+    display: flex;
+    gap: 24px;
+    justify-content: center;
+    margin-top: 32px;
+    font-size: 14px;
+    color: var(--text-muted);
+}
+.hero .badges span { display: flex; align-items: center; gap: 6px; }
+.kbd {
+    background: var(--bg-card);
+    padding: 2px 6px;
+    border-radius: 4px;
+    border: 1px solid var(--border);
+    font-size: 12px;
+    font-family: monospace;
+}
+</style>
+
 <div class="stats-bar">
     <span><span class="dot">●</span> P2P Network Active</span>
-    <span id="node-count">🖥️ Loading nodes...</span>
-    <span id="index-count">📊 Index: calculating...</span>
-    <span id="searches-today" style="margin-left: auto;">🔍 Loading...</span>
+    <span id="node-count">🖥️ Connecting...</span>
+    <span id="index-count">📊 Loading...</span>
+    <span class="stat" id="searches-today">🔍 --</span>
 </div>
 
-<main style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 80px 20px;">
+<div class="hero">
+    <h1>🔬 {{ config.APP_NAME }}</h1>
+    <p class="subtitle">Privacy-first search. No tracking. No ads. No cookies.</p>
     
-    <h1 style="font-size: 72px; font-weight: 400; margin-bottom: 8px; cursor: pointer;" onclick="this.style.transform='scale(1.1)'">
-        <span style="font-size: 80px;">🔬</span>
-    </h1>
-    <p style="font-size: 24px; color: var(--text2); margin-bottom: 8px;">
-        {{ config.APP_NAME }}
-    </p>
-    <p style="font-size: 14px; color: var(--text3); margin-bottom: 32px;">
-        Search the web. Privately. Freely.
-    </p>
-    
-    <div class="search-wrap" style="width: 100%; max-width: 584px; padding: 0;">
-        <form action="/search" method="GET" style="width: 100%;" id="search-form">
-            <div class="search-box" style="width: 100%;" id="search-box">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <circle cx="11" cy="11" r="8"></circle>
-                    <path d="m21 21-4.35-4.35"></path>
-                </svg>
-                <input type="text" name="q" class="search-input" placeholder="Search the web privately..." autocomplete="off" autofocus style="font-size: 18px;" id="search-input">
-                <button type="button" onclick="document.getElementById('search-input').value=''" style="background:none;border:none;cursor:pointer;color:var(--text3);padding:4px;" title="Clear">✕</button>
-            </div>
-            
-            <div style="display: flex; gap: 12px; justify-content: center; margin-top: 24px;">
-                <button type="submit" class="btn" style="padding: 10px 16px;">
-                    Search
-                </button>
-                <a href="/search?q=I'm feeling lucky" class="btn" style="padding: 10px 16px;">
-                    I'm feeling lucky
-                </a>
-            </div>
-        </form>
-    </div>
-    
-    <div style="display: flex; gap: 32px; margin-top: 48px; flex-wrap: wrap; justify-content: center; font-size: 14px; color: var(--text2);">
+    <div class="badges">
         <span>🔒 No tracking</span>
         <span>🚫 No ads</span>
         <span>🍪 No cookies</span>
-        <span>🌐 Decentralized</span>
+        <span>🌐 P2P</span>
     </div>
     
-    <div style="margin-top: 48px; font-size: 12px; color: var(--text3); text-align: center;">
-        <p>Press <kbd style="background: var(--bg3); padding: 2px 6px; border-radius: 3px; border: 1px solid var(--border);">/</kbd> to focus search</p>
-        <p style="margin-top: 4px;">Type <kbd style="background: var(--bg3); padding: 2px 6px; border-radius: 3px; border: 1px solid var(--border);">matrix</kbd> for a surprise</p>
-    </div>
-</main>
+    <p style="margin-top: 24px; font-size: 13px; color: var(--text-muted);">
+        Press <kbd class="kbd">/</kbd> to focus search
+    </p>
+</div>
 
 <script>
-document.addEventListener('keydown', (e) => {
-    if (e.key === '/' && document.activeElement.tagName !== 'INPUT') {
-        e.preventDefault();
-        document.getElementById('search-input').focus();
-    }
-});
-
 async function updateStats() {
     try {
-        const res = await fetch('/api/stats');
+        const res = await fetch('/api/v1/stats');
         const data = await res.json();
-        document.getElementById('node-count').textContent = '🖥️ ' + (data.nodes || 0) + ' nodes';
-        document.getElementById('index-count').textContent = '📊 ' + (data.indexed || 0).toLocaleString() + ' pages indexed';
-        document.getElementById('searches-today').textContent = '🔍 ' + (data.searches_today || 0) + ' searches today';
+        document.getElementById('node-count').textContent = '🖥️ ' + data.nodes + ' nodes';
+        document.getElementById('index-count').textContent = '📊 ' + (data.indexed || 0).toLocaleString() + ' indexed';
+        document.getElementById('searches-today').textContent = '🔍 ' + (data.searches_today || 0).toLocaleString() + ' today';
     } catch (e) {
-        document.getElementById('node-count').textContent = '🖥️ P2P connecting...';
-        document.getElementById('index-count').textContent = '📊 Index loading...';
+        document.getElementById('node-count').textContent = '🖥️ P2P';
     }
 }
-
 updateStats();
 setInterval(updateStats, 30000);
 </script>
