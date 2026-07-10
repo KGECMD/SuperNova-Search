@@ -101,6 +101,8 @@ def create_app(config_override: Optional[dict] = None) -> Flask:
     from atomic_search.routes.ai import bp as ai_bp
     from atomic_search.routes.static import bp as static_bp
     from atomic_search.routes.tools import bp as tools_bp
+    from atomic_search.routes.search_enhancements import bp as search_enhance_bp
+    from atomic_search.routes.user_features import bp as user_features_bp
     
     app.register_blueprint(main_bp)
     app.register_blueprint(api_bp)
@@ -108,9 +110,14 @@ def create_app(config_override: Optional[dict] = None) -> Flask:
     app.register_blueprint(ai_bp)
     app.register_blueprint(static_bp)
     app.register_blueprint(tools_bp)
+    app.register_blueprint(search_enhance_bp)
+    app.register_blueprint(user_features_bp)
     
-    # Exempt tools from CSRF for easier API access
+    # Exempt tools and API from CSRF for easier access
     csrf.exempt(tools_bp)
+    csrf.exempt(api_bp)
+    csrf.exempt(search_enhance_bp)
+    csrf.exempt(user_features_bp)
 
     # Error handlers
     @app.errorhandler(404)
