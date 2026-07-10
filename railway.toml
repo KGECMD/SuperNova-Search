@@ -2,8 +2,7 @@
 name = "atomic-search"
 
 [build]
-builder = "NIXPACKS"
-nixpacksVersion = "latest"
+builder = "RAILPACK"
 
 [deploy]
 healthcheckPath = "/health"
@@ -14,3 +13,4 @@ startCommand = "gunicorn 'atomic_search.main:app' --bind 0.0.0.0:$PORT --workers
 [environment]
 FLASK_ENV = "production"
 FLASK_DEBUG = "false"
+
