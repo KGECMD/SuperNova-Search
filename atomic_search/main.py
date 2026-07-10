@@ -2,6 +2,7 @@
 Atomic Search - Main Entry Point
 
 Run with: python -m atomic_search.main
+         or: gunicorn 'atomic_search.main:app' ...
 """
 
 import asyncio
@@ -14,31 +15,32 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from atomic_search.app import create_app
 from atomic_search.config import config
 
+# Create the app instance for gunicorn
+app = create_app()
+
 
 def main():
     """Run the Atomic Search application."""
-    app = create_app()
-    
     # Get host and port from config
     host = config.HOST
     port = config.PORT
     debug = config.DEBUG
-    
-    print(f"""
+
+    print("""
 ╔══════════════════════════════════════════════════════════════╗
 ║                                                              ║
-║     🔬 Atomic Search - Privacy-First Search Engine            ║
+║     Atomic Search - Privacy-First Search Engine               ║
 ║                                                              ║
-║     Version: {config.APP_VERSION:<44}║
-║     Mode: {'Production' if not debug else 'Development':<44}║
+║     Version: 1.0.0                                           ║
+║     Mode: Production                                         ║
 ║                                                              ║
-║     Running at: http://{host}:{port}                        ║
+║     Running at: http://{0}:{1}                              ║
 ║                                                              ║
 ║     Press Ctrl+C to stop                                     ║
 ║                                                              ║
 ╚══════════════════════════════════════════════════════════════╝
-    """)
-    
+    """.format(host, port))
+
     app.run(
         host=host,
         port=port,

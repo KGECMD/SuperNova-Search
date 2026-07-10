@@ -1,4 +1,5 @@
-FROM python:3.14-slim
+# Atomic Search Dockerfile
+FROM python:3.12-slim
 
 # Set environment variables
 ENV PYTHONDONTWRITEBYTECODE=1 \
@@ -14,9 +15,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     gcc \
     libffi-dev \
     libssl-dev \
+    curl \
     && rm -rf /var/lib/apt/lists/*
 
-# Copy requirements
+# Copy requirements first for better caching
 COPY requirements.txt .
 
 # Install Python dependencies
@@ -33,12 +35,12 @@ RUN useradd -m -u 1000 appuser && \
 # Switch to non-root user
 USER appuser
 
-# Expose port
-EXPOSE 5000
+# Expose port (Railway will override with PORT env)
+EXPOSE 8080
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
-    CMD python -c "import urllib.request; urllib.request.urlopen('http://localhost:5000/')" || exit 1
+    CMD curl -f http://localhost:8080/health || exit 1
 
-# Run the application
-CMD ["gunicorn", "--bind", "0.0.0.0:5000", "--workers", "4", "--threads", "2", "--worker-class", "gevent", "atomic_search:create_app()"]
+# Default command - can be overridden by Railway
+CMD ["gunicorn", "atomic_search.main:app", "--bind", "0.0.0.0:8080", "--workers", "2", "--threads", "4", "--timeout", "120"]
