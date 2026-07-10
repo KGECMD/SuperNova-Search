@@ -23,3 +23,6 @@
 127.0.0.1 - - [10/Jul/2026 18:58:25] "POST /tools/calculate HTTP/1.1" 200 -
 127.0.0.1 - - [10/Jul/2026 18:58:25] "GET /api/v1/stats HTTP/1.1" 200 -
 127.0.0.1 - - [10/Jul/2026 18:58:30] "POST /tools/convert HTTP/1.1" 200 -
+127.0.0.1 - - [10/Jul/2026 18:59:24] "GET /health HTTP/1.1" 200 -
+127.0.0.1 - - [10/Jul/2026 18:59:24] "POST /tools/calculate HTTP/1.1" 200 -
+127.0.0.1 - - [10/Jul/2026 18:59:24] "GET /api/v1/stats HTTP/1.1" 200 -

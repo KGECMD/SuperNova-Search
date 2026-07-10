@@ -63,9 +63,11 @@ def calculate():
     try:
         # Safely evaluate mathematical expression
         # Only allow basic math operations
-        allowed_chars = set('0123456789+-*/().e ')
+        allowed_chars = set('0123456789+-*/().e sqrtloginsincostanpow ')
         if all(c in allowed_chars for c in expression):
-            result = eval(expression)
+            # Replace common functions with their math equivalents
+            safe_expr = expression.replace('sqrt', '**0.5').replace('log', 'log10')
+            result = eval(safe_expr)
             return jsonify({"success": True, "result": float(result)})
         else:
             return jsonify({"success": False, "error": "Invalid characters"})
