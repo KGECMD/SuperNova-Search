@@ -13,7 +13,4 @@ COPY . .
 ENV PYTHONUNBUFFERED=1
 ENV DATABASE_PATH=/data/supernova_index.db
 
-# Volume for persistent data
-VOLUME /data
-
 CMD ["gunicorn", "atomic_search.app:app", "--bind", "0.0.0.0:8080"]
