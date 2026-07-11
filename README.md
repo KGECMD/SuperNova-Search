@@ -1,10 +1,18 @@
-# 🔬 Atomic Search
+# ⭐ SuperNova Search by the UCXP Project
 
 A **privacy-first**, **open-source** search engine with AI capabilities. Built for those who believe the internet should be searchable without surveillance.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 [![Python](https://img.shields.io/badge/Python-3.10+-green.svg)](https://www.python.org/)
 [![Docker](https://img.shields.io/badge/Docker-Ready-blue.svg)](https://www.docker.com/)
+[![Security](https://img.shields.io/badge/Security-Zero%20Telemetry-red.svg)]()
+
+**By the UCXP Project** - Your privacy is our priority.
+
+## 💬 Community Support
+
+Join our Matrix room for support, updates, and discussions:
+- **Matrix:** [#supernovabyucxpproject:matrix.org](https://matrix.to/#/#supernovabyucxpproject:matrix.org)
 
 ## ✨ Features
 
