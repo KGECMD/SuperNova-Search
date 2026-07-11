@@ -2,7 +2,7 @@
 SuperNova Search - Main Entry Point
 
 Run with: python -m atomic_search.main
-         or: gunicorn 'atomic_search.main:app' ...
+         or: gunicorn 'atomic_search.app:app' ...
 """
 
 import os
