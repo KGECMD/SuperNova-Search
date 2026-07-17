@@ -32,7 +32,7 @@ aiosqlite>=0.19.0
 
 # Caching and background tasks
 redis>=5.0.0
-celery>=5.3.0
+celery>=5.6.3
 APScheduler>=3.11.3
 
 # Security
